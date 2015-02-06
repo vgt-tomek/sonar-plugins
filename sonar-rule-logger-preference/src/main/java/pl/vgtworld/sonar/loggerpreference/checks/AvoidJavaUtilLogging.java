@@ -29,7 +29,7 @@ public class AvoidJavaUtilLogging extends BaseTreeVisitor implements JavaFileSca
 
 	public static final String KEY = "AvoidJavaUtilLogging";
 
-	private final RuleKey RULE_KEY = RuleKey.of(Definition.REPOSITORY_KEY, KEY);
+	private static final RuleKey RULE_KEY = RuleKey.of(Definition.REPOSITORY_KEY, KEY);
 
 	private JavaFileScannerContext context;
 
