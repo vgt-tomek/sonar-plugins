@@ -91,7 +91,7 @@ public class AvoidJavaUtilLogging extends BaseTreeVisitor implements JavaFileSca
 		if (forbiddenImportTree != null) {
 			context.addIssue(forbiddenImportTree, RULE_KEY, MESSAGE);
 		} else if (forbiddenStarImportTree != null && loggerProperty != null) {
-			context.addIssue(forbiddenStarImportTree, RULE_KEY, MESSAGE);
+			context.addIssue(loggerProperty, RULE_KEY, MESSAGE);
 		} else if (loggerPropertyFullName != null) {
 			context.addIssue(loggerPropertyFullName, RULE_KEY, MESSAGE);
 		}

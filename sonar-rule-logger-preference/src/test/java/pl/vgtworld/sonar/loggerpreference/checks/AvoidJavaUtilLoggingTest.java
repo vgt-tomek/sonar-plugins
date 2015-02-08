@@ -39,7 +39,7 @@ public class AvoidJavaUtilLoggingTest {
 		CheckMessage message = messages.iterator().next();
 
 		assertThat(messages).hasSize(1);
-		assertThat(message.getLine()).isEqualTo(4);
+		assertThat(message.getLine()).isEqualTo(9);
 		assertThat(message.getDefaultMessage()).isEqualTo(AvoidJavaUtilLogging.MESSAGE);
 	}
 
