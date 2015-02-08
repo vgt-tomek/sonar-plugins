@@ -24,6 +24,8 @@ import java.util.LinkedList;
 )
 public class AvoidJavaUtilLogging extends BaseTreeVisitor implements JavaFileScanner {
 
+	public static final String CLASS_NAME = "Logger";
+
 	public static final String FORBIDDEN_IMPORT = "java.util.logging.Logger";
 
 	public static final String FORBIDDEN_STAR_IMPORT = "java.util.logging.*";
@@ -53,8 +55,8 @@ public class AvoidJavaUtilLogging extends BaseTreeVisitor implements JavaFileSca
 
 	@Override
 	public void visitVariable(VariableTree tree) {
-		String parsedClassName = getImportAsString((ExpressionTree) tree.type());
-		if (parsedClassName.equals("Logger")) {
+		String parsedClassName = getFullClassNameAsString((ExpressionTree) tree.type());
+		if (parsedClassName.equals(CLASS_NAME)) {
 			loggerProperty = tree;
 		}
 		if (parsedClassName.equals(FORBIDDEN_IMPORT)) {
@@ -65,7 +67,7 @@ public class AvoidJavaUtilLogging extends BaseTreeVisitor implements JavaFileSca
 
 	@Override
 	public void visitImport(ImportTree tree) {
-		String parsedImport = getImportAsString((ExpressionTree) tree.qualifiedIdentifier());
+		String parsedImport = getFullClassNameAsString((ExpressionTree) tree.qualifiedIdentifier());
 
 		if (parsedImport.equals(FORBIDDEN_IMPORT)) {
 			forbiddenImportTree = tree;
@@ -87,7 +89,7 @@ public class AvoidJavaUtilLogging extends BaseTreeVisitor implements JavaFileSca
 		}
 	}
 
-	private static String getImportAsString(ExpressionTree tree) {
+	private static String getFullClassNameAsString(ExpressionTree tree) {
 		Deque<String> pieces = new LinkedList<>();
 
 		ExpressionTree element = tree;
