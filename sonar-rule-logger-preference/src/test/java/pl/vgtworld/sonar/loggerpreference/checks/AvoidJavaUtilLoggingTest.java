@@ -70,4 +70,18 @@ public class AvoidJavaUtilLoggingTest {
 		assertThat(message.getDefaultMessage()).isEqualTo(AvoidJavaUtilLogging.MESSAGE);
 	}
 
+	@Test
+	public void shouldCleanResultsBeforeScanning() {
+		AvoidJavaUtilLogging check = new AvoidJavaUtilLogging();
+
+		File file1 = new File("src/test/resources/JavaUtilLoggingImport.txt");
+		File file2 = new File("src/test/resources/JavaUtilLoggingStarImportWithoutLogger.txt");
+		JavaAstScanner.scanSingleFile(file1, new VisitorsBridge(check));
+		SourceFile sourceFile = JavaAstScanner.scanSingleFile(file2, new VisitorsBridge(check));
+
+		Set<CheckMessage> messages = sourceFile.getCheckMessages();
+
+		assertThat(messages).hasSize(0);
+	}
+
 }

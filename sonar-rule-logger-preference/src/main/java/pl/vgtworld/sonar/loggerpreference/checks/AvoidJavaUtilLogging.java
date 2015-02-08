@@ -49,6 +49,7 @@ public class AvoidJavaUtilLogging extends BaseTreeVisitor implements JavaFileSca
 	@Override
 	public void scanFile(JavaFileScannerContext javaFileScannerContext) {
 		context = javaFileScannerContext;
+		clearResults();
 		scan(context.getTree());
 		validateRule();
 	}
@@ -77,6 +78,13 @@ public class AvoidJavaUtilLogging extends BaseTreeVisitor implements JavaFileSca
 		}
 
 		super.visitImport(tree);
+	}
+
+	private void clearResults() {
+		forbiddenImportTree = null;
+		forbiddenStarImportTree = null;
+		loggerProperty = null;
+		loggerPropertyFullName = null;
 	}
 
 	private void validateRule() {
