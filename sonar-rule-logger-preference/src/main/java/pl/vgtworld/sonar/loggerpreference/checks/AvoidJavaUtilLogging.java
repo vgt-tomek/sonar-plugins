@@ -23,7 +23,10 @@ import java.util.LinkedList;
 )
 public class AvoidJavaUtilLogging extends BaseTreeVisitor implements JavaFileScanner {
 
-	public static final String FORBIDDEN_IMPORT = "java.util.logging.Logger";
+	public static final String[] FORBIDDEN_IMPORTS = {
+			"java.util.logging.Logger",
+			"java.util.logging.*"
+	};
 
 	public static final String MESSAGE = "Avoid logger from java.util.logging package";
 
@@ -43,8 +46,10 @@ public class AvoidJavaUtilLogging extends BaseTreeVisitor implements JavaFileSca
 	public void visitImport(ImportTree tree) {
 		String parsedImport = getImportAsString((ExpressionTree) tree.qualifiedIdentifier());
 
-		if (parsedImport.equals(FORBIDDEN_IMPORT)) {
-			context.addIssue(tree, RULE_KEY, MESSAGE);
+		for (String forbiddenImport : FORBIDDEN_IMPORTS) {
+			if (parsedImport.equals(forbiddenImport)) {
+				context.addIssue(tree, RULE_KEY, MESSAGE);
+			}
 		}
 
 		super.visitImport(tree);

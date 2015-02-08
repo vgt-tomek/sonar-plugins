@@ -27,4 +27,20 @@ public class AvoidJavaUtilLoggingTest {
 		assertThat(message.getLine()).isEqualTo(4);
 		assertThat(message.getDefaultMessage()).isEqualTo(AvoidJavaUtilLogging.MESSAGE);
 	}
+
+	@Test
+	public void shouldRaiseAnIssueOnStarImport() {
+		AvoidJavaUtilLogging check = new AvoidJavaUtilLogging();
+
+		File file = new File("src/test/resources/JavaUtilLoggingStarImport.txt");
+		SourceFile sourceFile = JavaAstScanner.scanSingleFile(file, new VisitorsBridge(check));
+
+		Set<CheckMessage> messages = sourceFile.getCheckMessages();
+		CheckMessage message = messages.iterator().next();
+
+		assertThat(messages).hasSize(1);
+		assertThat(message.getLine()).isEqualTo(4);
+		assertThat(message.getDefaultMessage()).isEqualTo(AvoidJavaUtilLogging.MESSAGE);
+	}
+
 }
