@@ -23,10 +23,9 @@ import java.util.LinkedList;
 )
 public class AvoidJavaUtilLogging extends BaseTreeVisitor implements JavaFileScanner {
 
-	public static final String[] FORBIDDEN_IMPORTS = {
-			"java.util.logging.Logger",
-			"java.util.logging.*"
-	};
+	public static final String FORBIDDEN_IMPORT = "java.util.logging.Logger";
+
+	public static final String FORBIDDEN_STAR_IMPORT = "java.util.logging.*";
 
 	public static final String MESSAGE = "Avoid logger from java.util.logging package";
 
@@ -36,23 +35,37 @@ public class AvoidJavaUtilLogging extends BaseTreeVisitor implements JavaFileSca
 
 	private JavaFileScannerContext context;
 
+	private Tree forbiddenImportTree;
+
+	private Tree forbiddenStarImportTree;
+
 	@Override
 	public void scanFile(JavaFileScannerContext javaFileScannerContext) {
 		context = javaFileScannerContext;
 		scan(context.getTree());
+		validateRule();
 	}
 
 	@Override
 	public void visitImport(ImportTree tree) {
 		String parsedImport = getImportAsString((ExpressionTree) tree.qualifiedIdentifier());
 
-		for (String forbiddenImport : FORBIDDEN_IMPORTS) {
-			if (parsedImport.equals(forbiddenImport)) {
-				context.addIssue(tree, RULE_KEY, MESSAGE);
-			}
+		if (parsedImport.equals(FORBIDDEN_IMPORT)) {
+			forbiddenImportTree = tree;
+		}
+		if (parsedImport.equals(FORBIDDEN_STAR_IMPORT)) {
+			forbiddenStarImportTree = tree;
 		}
 
 		super.visitImport(tree);
+	}
+
+	private void validateRule() {
+		if (forbiddenImportTree != null) {
+			context.addIssue(forbiddenImportTree, RULE_KEY, MESSAGE);
+		} else if (forbiddenStarImportTree != null) {
+			context.addIssue(forbiddenStarImportTree, RULE_KEY, MESSAGE);
+		}
 	}
 
 	private static String getImportAsString(ExpressionTree tree) {
@@ -77,4 +90,5 @@ public class AvoidJavaUtilLogging extends BaseTreeVisitor implements JavaFileSca
 
 		return builder.toString();
 	}
+
 }
