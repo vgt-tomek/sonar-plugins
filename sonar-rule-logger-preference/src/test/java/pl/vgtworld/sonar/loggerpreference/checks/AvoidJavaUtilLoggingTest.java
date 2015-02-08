@@ -55,4 +55,19 @@ public class AvoidJavaUtilLoggingTest {
 		assertThat(messages).hasSize(0);
 	}
 
+	@Test
+	public void shouldRaiseAnIssueWhenLoggerWithFullPackageNameIsUsedInsteadOfImport() {
+		AvoidJavaUtilLogging check = new AvoidJavaUtilLogging();
+
+		File file = new File("src/test/resources/JavaUtilLoggingNoImport.txt");
+		SourceFile sourceFile = JavaAstScanner.scanSingleFile(file, new VisitorsBridge(check));
+
+		Set<CheckMessage> messages = sourceFile.getCheckMessages();
+		CheckMessage message = messages.iterator().next();
+
+		assertThat(messages).hasSize(1);
+		assertThat(message.getLine()).isEqualTo(8);
+		assertThat(message.getDefaultMessage()).isEqualTo(AvoidJavaUtilLogging.MESSAGE);
+	}
+
 }

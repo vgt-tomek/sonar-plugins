@@ -42,6 +42,8 @@ public class AvoidJavaUtilLogging extends BaseTreeVisitor implements JavaFileSca
 
 	private Tree loggerProperty;
 
+	private Tree loggerPropertyFullName;
+
 	@Override
 	public void scanFile(JavaFileScannerContext javaFileScannerContext) {
 		context = javaFileScannerContext;
@@ -51,8 +53,12 @@ public class AvoidJavaUtilLogging extends BaseTreeVisitor implements JavaFileSca
 
 	@Override
 	public void visitVariable(VariableTree tree) {
-		if (tree.type().toString().equals("Logger")) {
+		String parsedClassName = getImportAsString((ExpressionTree) tree.type());
+		if (parsedClassName.equals("Logger")) {
 			loggerProperty = tree;
+		}
+		if (parsedClassName.equals(FORBIDDEN_IMPORT)) {
+			loggerPropertyFullName = tree;
 		}
 		super.visitVariable(tree);
 	}
@@ -76,6 +82,8 @@ public class AvoidJavaUtilLogging extends BaseTreeVisitor implements JavaFileSca
 			context.addIssue(forbiddenImportTree, RULE_KEY, MESSAGE);
 		} else if (forbiddenStarImportTree != null && loggerProperty != null) {
 			context.addIssue(forbiddenStarImportTree, RULE_KEY, MESSAGE);
+		} else if (loggerPropertyFullName != null) {
+			context.addIssue(loggerPropertyFullName, RULE_KEY, MESSAGE);
 		}
 	}
 
