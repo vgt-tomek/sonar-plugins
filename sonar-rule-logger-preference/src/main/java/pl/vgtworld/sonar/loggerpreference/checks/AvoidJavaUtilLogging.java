@@ -10,6 +10,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 import pl.vgtworld.sonar.loggerpreference.Definition;
 
 import java.util.Deque;
@@ -39,11 +40,21 @@ public class AvoidJavaUtilLogging extends BaseTreeVisitor implements JavaFileSca
 
 	private Tree forbiddenStarImportTree;
 
+	private Tree loggerProperty;
+
 	@Override
 	public void scanFile(JavaFileScannerContext javaFileScannerContext) {
 		context = javaFileScannerContext;
 		scan(context.getTree());
 		validateRule();
+	}
+
+	@Override
+	public void visitVariable(VariableTree tree) {
+		if (tree.type().toString().equals("Logger")) {
+			loggerProperty = tree;
+		}
+		super.visitVariable(tree);
 	}
 
 	@Override
@@ -63,7 +74,7 @@ public class AvoidJavaUtilLogging extends BaseTreeVisitor implements JavaFileSca
 	private void validateRule() {
 		if (forbiddenImportTree != null) {
 			context.addIssue(forbiddenImportTree, RULE_KEY, MESSAGE);
-		} else if (forbiddenStarImportTree != null) {
+		} else if (forbiddenStarImportTree != null && loggerProperty != null) {
 			context.addIssue(forbiddenStarImportTree, RULE_KEY, MESSAGE);
 		}
 	}

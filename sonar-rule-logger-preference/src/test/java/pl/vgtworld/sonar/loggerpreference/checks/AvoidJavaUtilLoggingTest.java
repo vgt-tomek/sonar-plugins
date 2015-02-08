@@ -43,4 +43,16 @@ public class AvoidJavaUtilLoggingTest {
 		assertThat(message.getDefaultMessage()).isEqualTo(AvoidJavaUtilLogging.MESSAGE);
 	}
 
+	@Test
+	public void shouldNotRaiseAnIssueOnStarImportWhenLoggerIsNotUsed() {
+		AvoidJavaUtilLogging check = new AvoidJavaUtilLogging();
+
+		File file = new File("src/test/resources/JavaUtilLoggingStarImportWithoutLogger.txt");
+		SourceFile sourceFile = JavaAstScanner.scanSingleFile(file, new VisitorsBridge(check));
+
+		Set<CheckMessage> messages = sourceFile.getCheckMessages();
+
+		assertThat(messages).hasSize(0);
+	}
+
 }

@@ -1,0 +1,9 @@
+package pl.vgtworld.sonar.loggerpreference;
+
+import java.io.File;
+import java.util.logging.*;
+
+
+public class JavaUtilLoggingImportWithoutLogger {
+
+}
