@@ -56,19 +56,32 @@ public class AvoidJavaUtilLogging extends BaseTreeVisitor implements JavaFileSca
 
 	@Override
 	public void visitVariable(VariableTree tree) {
-		String parsedClassName = getFullClassNameAsString((ExpressionTree) tree.type());
-		if (parsedClassName.equals(CLASS_NAME)) {
-			loggerProperty = tree;
-		}
-		if (parsedClassName.equals(FORBIDDEN_IMPORT)) {
-			loggerPropertyFullName = tree;
+		if (tree.type() instanceof ExpressionTree) {
+			visitVariable((ExpressionTree) tree.type());
 		}
 		super.visitVariable(tree);
 	}
 
 	@Override
 	public void visitImport(ImportTree tree) {
-		String parsedImport = getFullClassNameAsString((ExpressionTree) tree.qualifiedIdentifier());
+		if (tree.qualifiedIdentifier() instanceof ExpressionTree) {
+			visitImport((ExpressionTree) tree.qualifiedIdentifier());
+		}
+		super.visitImport(tree);
+	}
+
+	private void visitVariable(ExpressionTree tree) {
+		String parsedClassName = getFullClassNameAsString(tree);
+		if (parsedClassName.equals(CLASS_NAME)) {
+			loggerProperty = tree;
+		}
+		if (parsedClassName.equals(FORBIDDEN_IMPORT)) {
+			loggerPropertyFullName = tree;
+		}
+	}
+
+	private void visitImport(ExpressionTree tree) {
+		String parsedImport = getFullClassNameAsString(tree);
 
 		if (parsedImport.equals(FORBIDDEN_IMPORT)) {
 			forbiddenImportTree = tree;
@@ -76,8 +89,6 @@ public class AvoidJavaUtilLogging extends BaseTreeVisitor implements JavaFileSca
 		if (parsedImport.equals(FORBIDDEN_STAR_IMPORT)) {
 			forbiddenStarImportTree = tree;
 		}
-
-		super.visitImport(tree);
 	}
 
 	private void clearResults() {

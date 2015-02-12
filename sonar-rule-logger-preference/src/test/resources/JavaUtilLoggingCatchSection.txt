@@ -1,0 +1,13 @@
+public class JavaUtilLoggingCatchSection {
+
+    private static final String STRING_FOO = "foo";
+
+    public void foo() {
+        try {
+            int var = 21;
+        } catch (Exception | IOException e) {
+            int otherVar = 8;
+        }
+    }
+
+}

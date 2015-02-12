@@ -84,4 +84,16 @@ public class AvoidJavaUtilLoggingTest {
 		assertThat(messages).hasSize(0);
 	}
 
+	@Test
+	public void shouldNotFailOnParsingCatchSection() {
+		AvoidJavaUtilLogging check = new AvoidJavaUtilLogging();
+
+		File file = new File("src/test/resources/JavaUtilLoggingCatchSection.txt");
+		SourceFile sourceFile = JavaAstScanner.scanSingleFile(file, new VisitorsBridge(check));
+
+		Set<CheckMessage> messages = sourceFile.getCheckMessages();
+
+		assertThat(messages).hasSize(0);
+	}
+
 }
