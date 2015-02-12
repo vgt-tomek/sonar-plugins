@@ -1,0 +1,12 @@
+package pl.vgtworld.sonar.loggerpreference;
+
+import java.io.File;
+
+
+public class JavaUtilLoggingNoImport {
+
+    public void foo() {
+        private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger(JavaUtilLoggingNoImport.class.getName());
+    }
+
+}

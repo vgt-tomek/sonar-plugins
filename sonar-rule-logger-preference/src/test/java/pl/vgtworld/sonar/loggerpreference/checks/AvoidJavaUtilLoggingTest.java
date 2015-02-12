@@ -111,4 +111,19 @@ public class AvoidJavaUtilLoggingTest {
 		assertThat(message1.getDefaultMessage()).isEqualTo(AvoidJavaUtilLogging.MESSAGE);
 		assertThat(message2.getDefaultMessage()).isEqualTo(AvoidJavaUtilLogging.MESSAGE);
 	}
+
+	@Test
+	public void shouldFindLoggerAsLocalVariable() {
+		AvoidJavaUtilLogging check = new AvoidJavaUtilLogging();
+
+		File file = new File("src/test/resources/JavaUtilLoggingLocalVariable.txt");
+		SourceFile sourceFile = JavaAstScanner.scanSingleFile(file, new VisitorsBridge(check));
+
+		Set<CheckMessage> messages = sourceFile.getCheckMessages();
+		CheckMessage message = messages.iterator().next();
+
+		assertThat(messages).hasSize(1);
+		assertThat(message.getLine()).isEqualTo(9);
+		assertThat(message.getDefaultMessage()).isEqualTo(AvoidJavaUtilLogging.MESSAGE);
+	}
 }
