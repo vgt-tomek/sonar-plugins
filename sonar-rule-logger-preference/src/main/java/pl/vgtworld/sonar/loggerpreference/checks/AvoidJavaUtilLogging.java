@@ -13,8 +13,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import pl.vgtworld.sonar.loggerpreference.Definition;
 
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 
 @Rule(
 		key = AvoidJavaUtilLogging.KEY,
@@ -42,9 +44,9 @@ public class AvoidJavaUtilLogging extends BaseTreeVisitor implements JavaFileSca
 
 	private Tree forbiddenStarImportTree;
 
-	private Tree loggerProperty;
+	private List<Tree> loggerProperty;
 
-	private Tree loggerPropertyFullName;
+	private List<Tree> loggerPropertyFullName;
 
 	@Override
 	public void scanFile(JavaFileScannerContext javaFileScannerContext) {
@@ -73,10 +75,10 @@ public class AvoidJavaUtilLogging extends BaseTreeVisitor implements JavaFileSca
 	private void visitVariable(ExpressionTree tree) {
 		String parsedClassName = getFullClassNameAsString(tree);
 		if (parsedClassName.equals(CLASS_NAME)) {
-			loggerProperty = tree;
+			loggerProperty.add(tree);
 		}
 		if (parsedClassName.equals(FORBIDDEN_IMPORT)) {
-			loggerPropertyFullName = tree;
+			loggerPropertyFullName.add(tree);
 		}
 	}
 
@@ -94,17 +96,21 @@ public class AvoidJavaUtilLogging extends BaseTreeVisitor implements JavaFileSca
 	private void clearResults() {
 		forbiddenImportTree = null;
 		forbiddenStarImportTree = null;
-		loggerProperty = null;
-		loggerPropertyFullName = null;
+		loggerProperty = new ArrayList<>();
+		loggerPropertyFullName = new ArrayList<>();
 	}
 
 	private void validateRule() {
 		if (forbiddenImportTree != null) {
 			context.addIssue(forbiddenImportTree, RULE_KEY, MESSAGE);
 		} else if (forbiddenStarImportTree != null && loggerProperty != null) {
-			context.addIssue(loggerProperty, RULE_KEY, MESSAGE);
+			for (Tree property : loggerProperty) {
+				context.addIssue(property, RULE_KEY, MESSAGE);
+			}
 		} else if (loggerPropertyFullName != null) {
-			context.addIssue(loggerPropertyFullName, RULE_KEY, MESSAGE);
+			for (Tree property : loggerPropertyFullName) {
+				context.addIssue(property, RULE_KEY, MESSAGE);
+			}
 		}
 	}
 

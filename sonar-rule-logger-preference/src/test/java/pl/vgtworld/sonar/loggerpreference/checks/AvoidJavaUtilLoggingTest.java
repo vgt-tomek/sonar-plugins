@@ -96,4 +96,19 @@ public class AvoidJavaUtilLoggingTest {
 		assertThat(messages).hasSize(0);
 	}
 
+	@Test
+	public void shouldFindMultipleLoggersInOneFile() {
+		AvoidJavaUtilLogging check = new AvoidJavaUtilLogging();
+
+		File file = new File("src/test/resources/JavaUtilLoggingMultipleLoggers.txt");
+		SourceFile sourceFile = JavaAstScanner.scanSingleFile(file, new VisitorsBridge(check));
+
+		Set<CheckMessage> messages = sourceFile.getCheckMessages();
+		CheckMessage message1 = messages.iterator().next();
+		CheckMessage message2 = messages.iterator().next();
+
+		assertThat(messages).hasSize(2);
+		assertThat(message1.getDefaultMessage()).isEqualTo(AvoidJavaUtilLogging.MESSAGE);
+		assertThat(message2.getDefaultMessage()).isEqualTo(AvoidJavaUtilLogging.MESSAGE);
+	}
 }
